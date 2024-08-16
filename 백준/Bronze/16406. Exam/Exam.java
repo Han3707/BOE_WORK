@@ -1,5 +1,3 @@
-
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -23,7 +21,7 @@ public class Main {
 		}
 		
 		if (yes >= k) {
-			answer = k + (a.length()-yes);
+			answer = k + no;
 		}
 		else {
 			answer = yes + (a.length()-k);
