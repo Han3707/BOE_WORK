@@ -1,92 +1,66 @@
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Scanner;
 import java.util.StringTokenizer;
 
 public class Main {
-
+    static int[][] home;
     static int N;
-    static int[][] grid;
+    static int count=0;
 
-    static class Pipe {
-        int x, y, status;
-
-        Pipe(int x, int y, int status) {
-            this.x = x;
-            this.y = y;
-            this.status = status;
-        }
-    }
-
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         N = Integer.parseInt(br.readLine());
-        grid = new int[N][N];
-
-        for (int i = 0; i < N; i++) {
+        home = new int[N+1][N+1];
+        for(int r=1;r<=N;r++) {
             StringTokenizer st = new StringTokenizer(br.readLine());
-            for (int j = 0; j < N; j++) {
-                grid[i][j] = Integer.parseInt(st.nextToken());
+            for(int c=1;c<=N;c++) {
+                home[r][c] = Integer.parseInt(st.nextToken());
             }
         }
 
-        System.out.println(bfs());
+        // 가로: 1, 세로: 2, 대각선: 3
+        dfs(1,2,1);  // 가장 처음 (1,2), 방향 가로
+        System.out.println(count);
+
     }
 
-    static int bfs() {
-        Queue<Pipe> queue = new LinkedList<>();
-        queue.add(new Pipe(0, 1, 0));
-        int count = 0;
-
-        while (!queue.isEmpty()) {
-            Pipe current = queue.poll();
-            int x = current.x;
-            int y = current.y;
-            int status = current.status;
-
-            if (x == N - 1 && y == N - 1) {
-                count++;
-                continue;
-            }
-
-            // 가로 상태
-            if (status == 0) {
-                if (y + 1 < N && grid[x][y + 1] == 0) {
-                    queue.add(new Pipe(x, y + 1, 0));
-                }
-                if (x + 1 < N && y + 1 < N && grid[x][y + 1] == 0 && grid[x + 1][y] == 0 && grid[x + 1][y + 1] == 0) {
-                    queue.add(new Pipe(x + 1, y + 1, 2));
-                }
-            }
-
-            // 세로 상태
-            else if (status == 1) {
-                if (x + 1 < N && grid[x + 1][y] == 0) {
-                    queue.add(new Pipe(x + 1, y, 1));
-                }
-                if (x + 1 < N && y + 1 < N && grid[x + 1][y] == 0 && grid[x][y + 1] == 0 && grid[x + 1][y + 1] == 0) {
-                    queue.add(new Pipe(x + 1, y + 1, 2));
-                }
-            }
-
-            // 대각선 상태
-            else if (status == 2) {
-                if (y + 1 < N && grid[x][y + 1] == 0) {
-                    queue.add(new Pipe(x, y + 1, 0));
-                }
-                if (x + 1 < N && grid[x + 1][y] == 0) {
-                    queue.add(new Pipe(x + 1, y, 1));
-                }
-                if (x + 1 < N && y + 1 < N && grid[x + 1][y] == 0 && grid[x][y + 1] == 0 && grid[x + 1][y + 1] == 0) {
-                    queue.add(new Pipe(x + 1, y + 1, 2));
-                }
+    public static void dfs(int r, int c, int dir) {
+        if(r>N || c >N || home[r][c]==1) {
+            return;
+        }
+         // 대각선방향으로 옮길 때 도착전에 / 대각선이 1인지 확인
+        if(dir==3) {
+            if(home[r][c-1]==1 || home[r-1][c]==1) {
+                return;
             }
         }
+        if(r==N && c==N) {
+            count++;
+            return;
+        }
 
-        return count;
+        // 파이프가 가로방향인 경우 -> 가로방향, 대각선방향
+        if(dir==1) {
+            dfs(r,c+1,1);
+            dfs(r+1,c+1,3);
+        }
+        // 파이프가 세로방향인 경우 -> 세로방향, 대각선방향
+        if(dir==2) {
+            dfs(r+1,c,2);
+            dfs(r+1,c+1,3);
+        }
+        // 파이프가 대각선방향인 경우 -> 가로방향, 세로방향, 대각선방향
+        if(dir==3) {
+            // 파이프의 / 대각선도 벽이 아니어야 함
+//            if(home[r][c-1]==1 || home[r-1][c]==1) {
+//                return;
+//            }
+            dfs(r,c+1,1);
+            dfs(r+1,c,2);
+            dfs(r+1,c+1,3);
+        }
+
     }
+
 }
-
