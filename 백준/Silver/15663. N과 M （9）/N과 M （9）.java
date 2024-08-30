@@ -2,49 +2,55 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.StringTokenizer;
 
 public class Main {
     static int n, m;
     static int[] num, ans;
     static boolean[] visited;
+    static HashSet<String> set = new HashSet<>(); // 중복 수열을 저장할 Set
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n = Integer.parseInt(st.nextToken()); // 전역 변수 n 할당
-        m = Integer.parseInt(st.nextToken()); // 전역 변수 m 할당
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
         num = new int[n];
         ans = new int[m];
         visited = new boolean[n];
 
-        st = new StringTokenizer(br.readLine()); // 새로운 라인에서 숫자들 읽기
-
+        st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
             num[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(num); // 숫자를 오름차순으로 정렬
+        Arrays.sort(num);
         dfs(0);
     }
 
     static void dfs(int depth) {
         if (depth == m) {
+            StringBuilder sb = new StringBuilder();
             for (int i = 0; i < m; i++) {
-                System.out.print(ans[i] + " ");
+                sb.append(ans[i]).append(" ");
             }
-            System.out.println();
+            String sequence = sb.toString().trim();
+
+            // Set에 중복 체크
+            if (!set.contains(sequence)) {
+                set.add(sequence);
+                System.out.println(sequence);
+            }
             return;
         }
 
-        int last = 0; // 마지막으로 사용된 숫자 저장용 변수
         for (int i = 0; i < n; i++) {
-            if (!visited[i] && last != num[i]) {
+            if (!visited[i]) {
                 visited[i] = true;
                 ans[depth] = num[i];
-                last = num[i];
                 dfs(depth + 1);
                 visited[i] = false;
             }
