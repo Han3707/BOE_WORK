@@ -5,7 +5,7 @@ public class Main {
     static int n, m;
     static int[][] map;
     static int[][] tempMap;
-    static boolean[][] visited;
+    static List<int[]> emptySpaces = new ArrayList<>();
     static int[] dx = {1, 0, -1, 0};
     static int[] dy = {0, 1, 0, -1};
     static int maxSafeArea = 0;
@@ -24,43 +24,40 @@ public class Main {
             st = new StringTokenizer(br.readLine());
             for (int j = 0; j < m; j++) {
                 map[i][j] = Integer.parseInt(st.nextToken());
+                if (map[i][j] == 0) {
+                    emptySpaces.add(new int[]{i, j});
+                }
             }
         }
 
-        dfs(0);
+        buildWalls(0, 0);
         System.out.println(maxSafeArea);
     }
 
-    // 벽을 세우는 모든 조합을 시도하는 DFS 메서드
-    static void dfs(int count) {
+    static void buildWalls(int count, int start) {
         if (count == 3) {
             spreadVirus();
             return;
         }
 
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < m; j++) {
-                if (map[i][j] == 0) {
-                    map[i][j] = 1;
-                    dfs(count + 1);
-                    map[i][j] = 0;
-                }
-            }
+        for (int i = start; i < emptySpaces.size(); i++) {
+            int[] current = emptySpaces.get(i);
+            map[current[0]][current[1]] = 1;
+            buildWalls(count + 1, i + 1);
+            map[current[0]][current[1]] = 0;
         }
     }
 
-    // 바이러스를 퍼뜨리는 BFS 메서드
     static void spreadVirus() {
         Queue<int[]> queue = new LinkedList<>();
-        visited = new boolean[n][m];
+        for (int i = 0; i < n; i++) {
+            System.arraycopy(map[i], 0, tempMap[i], 0, m);
+        }
 
-        // tempMap 초기화 및 바이러스 위치 큐에 추가
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < m; j++) {
-                tempMap[i][j] = map[i][j];
                 if (tempMap[i][j] == 2) {
                     queue.add(new int[]{i, j});
-                    visited[i][j] = true;
                 }
             }
         }
@@ -75,9 +72,8 @@ public class Main {
                 int ny = y + dy[i];
 
                 if (nx >= 0 && ny >= 0 && nx < n && ny < m) {
-                    if (tempMap[nx][ny] == 0 && !visited[nx][ny]) {
+                    if (tempMap[nx][ny] == 0) {
                         tempMap[nx][ny] = 2;
-                        visited[nx][ny] = true;
                         queue.add(new int[]{nx, ny});
                     }
                 }
@@ -87,7 +83,6 @@ public class Main {
         calculateSafeArea();
     }
 
-    // 안전 영역을 계산하는 메서드
     static void calculateSafeArea() {
         int safeArea = 0;
         for (int i = 0; i < n; i++) {
