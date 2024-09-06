@@ -4,7 +4,6 @@ import java.io.*;
 public class Main {
     static int N, M;
     static int[][] map, distance;
-    static boolean[][] visited;
     static int[] dx = {0, 0, 1, -1};
     static int[] dy = {1, -1, 0, 0};
     static int[] start;
@@ -18,7 +17,9 @@ public class Main {
 
         map = new int[N][M];
         distance = new int[N][M]; // 각 좌표의 최단 거리를 저장할 배열
-        visited = new boolean[N][M];
+        for (int i = 0; i < N; i++) {
+            Arrays.fill(distance[i], -1); // distance 배열을 -1로 초기화
+        }
 
         for (int i = 0; i < N; i++) {
             st = new StringTokenizer(br.readLine());
@@ -26,9 +27,10 @@ public class Main {
                 map[i][j] = Integer.parseInt(st.nextToken());
                 if (map[i][j] == 2) {
                     start = new int[]{i, j}; // 시작점 좌표 저장
+                    distance[i][j] = 0; // 시작점의 거리는 0으로 설정
                 }
-                if (map[i][j] == 1) {
-                    distance[i][j] = -1; // 아직 도달하지 않은 곳은 -1로 설정
+                if(map[i][j] == 0){
+                    distance[i][j] = 0; // 0인 곳은 벽이라 어차피 0 임    
                 }
             }
         }
@@ -49,8 +51,6 @@ public class Main {
     static void bfs(int x, int y) {
         Queue<int[]> q = new LinkedList<>();
         q.offer(new int[]{x, y});
-        visited[x][y] = true;
-        distance[x][y] = 0; // 시작점의 거리는 0
 
         while (!q.isEmpty()) {
             int[] cur = q.poll();
@@ -60,8 +60,8 @@ public class Main {
                 int nx = cx + dx[k];
                 int ny = cy + dy[k];
 
-                if (nx >= 0 && ny >= 0 && nx < N && ny < M && map[nx][ny] == 1 && !visited[nx][ny]) {
-                    visited[nx][ny] = true;
+                // 새로운 좌표가 범위 안에 있고, 아직 방문하지 않은 1인 좌표인 경우
+                if (nx >= 0 && ny >= 0 && nx < N && ny < M && map[nx][ny] == 1 && distance[nx][ny] == -1) {
                     distance[nx][ny] = distance[cx][cy] + 1; // 새로운 좌표까지의 거리는 이전 좌표 + 1
                     q.offer(new int[]{nx, ny});
                 }
