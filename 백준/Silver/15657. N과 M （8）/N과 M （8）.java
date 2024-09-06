@@ -1,13 +1,11 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
     static int n, m;
-    static int[] arr;
-    static StringBuilder sb = new StringBuilder(); // StringBuilder 사용
+    static int[] arr, res;
+    static boolean[] visited;
+    static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -16,31 +14,42 @@ public class Main {
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        arr = new int[n];
-
+        arr = new int[n + 1];
+        res = new int[m];
+        visited = new boolean[n + 1];
         st = new StringTokenizer(br.readLine());
-        for (int i = 0; i < n; i++) {
+        for (int i = 1; i < n + 1; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
         Arrays.sort(arr);
-        nm5(0, new int[m],0);
 
-        System.out.print(sb.toString()); // 한번에 출력
+
+        perm(0,1);
+
+        System.out.println(sb.toString());
+
     }
 
-    private static void nm5(int cnt, int[] selected,int idx) {
-        if (cnt == m) {
-            for (int i = 0; i < selected.length; i++) {
-                sb.append(selected[i]).append(" "); // StringBuilder에 추가
+    static void perm(int x,int start) {
+        if (x == m) {
+            for (int i = 0; i < m; i++) {
+                sb.append(res[i]).append(' ');
             }
-            sb.append("\n");
+            sb.append('\n');
             return;
         }
 
-        for (int i = idx; i < arr.length; i++) {
-            selected[cnt] = arr[i];
-            nm5(cnt + 1, selected,i);
+        for (int i = start; i < n + 1; i++) {
+//            if(!visited[i]){
+//                visited[i] = true;
+            res[x] = arr[i];
+            perm(x + 1,i);
+//                visited[i] = false;
         }
+
     }
+
 }
+
+
