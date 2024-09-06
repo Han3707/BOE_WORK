@@ -1,50 +1,55 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
 public class Main {
-    static int n,m;
-    static int[] arr;
-    public static void main(String[] args) throws IOException {
+    static int n, m;
+    static int[] arr,res;
+    static boolean[] visited;
+    static StringBuilder sb = new StringBuilder();
 
+    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        arr = new int[n];
-
+        arr = new int[n+1];
+        res = new int[m];
+        visited = new boolean[n + 1];
         st = new StringTokenizer(br.readLine());
-        for(int i=0; i<n; i++){
+        for(int i=1; i<n+1; i++) {
             arr[i] = Integer.parseInt(st.nextToken());
         }
 
         Arrays.sort(arr);
-        nm5(0,new int[m],new boolean[arr.length]);
+
+
+        perm(0);
+
+        System.out.println(sb.toString());
+
     }
 
-    private static void nm5(int cnt, int[] selected, boolean[] visited){
-
-        if(cnt == m){
-            for(int i=0; i<selected.length; i++) {
-                System.out.print(selected[i]+" ");
+    static void perm(int x) {
+        if (x == m) {
+            for (int i = 0; i < m; i++) {
+                sb.append(res[i]).append(' ');
             }
-            System.out.println();
+            sb.append('\n');
             return;
         }
 
-        for(int i=0; i<arr.length; i++){
+        for (int i = 1; i < n + 1; i++) {
             if(!visited[i]){
                 visited[i] = true;
-                selected[cnt] = arr[i];
-                nm5(cnt+1,selected,visited);
+                res[x] = arr[i];
+                perm(x + 1);
                 visited[i] = false;
             }
+
+            }
+
         }
     }
-}
+
