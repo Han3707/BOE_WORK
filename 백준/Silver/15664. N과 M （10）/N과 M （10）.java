@@ -1,52 +1,51 @@
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.Arrays;
-import java.util.StringTokenizer;
+import java.util.*;
+import java.io.*;
 
 public class Main {
     static int n, m;
-    static int[] num, ans;
+    static int[] arr, res;
     static boolean[] visited;
+    static StringBuilder sb = new StringBuilder();
 
     public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        n = Integer.parseInt(st.nextToken()); // 전역 변수 n 할당
-        m = Integer.parseInt(st.nextToken()); // 전역 변수 m 할당
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        num = new int[n];
-        ans = new int[m];
+        arr = new int[n];
+        res = new int[m];
         visited = new boolean[n];
 
-        st = new StringTokenizer(br.readLine()); // 새로운 라인에서 숫자들 읽기
-
+        st = new StringTokenizer(br.readLine());
         for (int i = 0; i < n; i++) {
-            num[i] = Integer.parseInt(st.nextToken());
+            arr[i] = Integer.parseInt(st.nextToken());
         }
 
-        Arrays.sort(num); // 숫자를 오름차순으로 정렬
-        dfs(0,0);
+        Arrays.sort(arr);  // 배열을 정렬하여 중복 수열 방지
+        perm(0,0);
+        System.out.println(sb.toString());
     }
 
-    static void dfs(int depth,int start) {
+    static void perm(int depth,int start) {
         if (depth == m) {
             for (int i = 0; i < m; i++) {
-                System.out.print(ans[i] + " ");
+                sb.append(res[i]).append(' ');
             }
-            System.out.println();
+            sb.append('\n');
             return;
         }
 
-        int last = 0; // 마지막으로 사용된 숫자 저장용 변수
+        int prev = -1;  // 이전에 사용한 값을 저장하는 변수
+
         for (int i = start; i < n; i++) {
-            if (last != num[i]) {
-
-                ans[depth] = num[i];
-                last = num[i];
-                dfs(depth + 1,i+1);
-
+            if (!visited[i] && arr[i] != prev) {  // 중복 방지를 위해 이전 값과 비교
+                visited[i] = true;
+                res[depth] = arr[i];
+                perm(depth + 1,i);
+                visited[i] = false;
+                prev = arr[i];  // 이전 값 업데이트
             }
         }
     }
