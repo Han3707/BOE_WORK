@@ -8,10 +8,8 @@ public class Solution {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st;
 
-        
-
         for (int tc = 1; tc <= 10; tc++) {
-            br.readLine();
+            br.readLine(); // 테스트 케이스 번호 (사용하지 않음)
             int startX = 0, startY = 0;
 
             // 입력 처리 및 도착점 찾기
@@ -26,42 +24,33 @@ public class Solution {
                 }
             }
 
-            // BFS 시작
-            int result = BFS(startX, startY);
+            // 해결 함수 실행
+            int result = solve(startX, startY);
             System.out.println("#" + tc + " " + result);
         }
     }
 
-    static int BFS(int startX, int startY) {
-        Queue<int[]> queue = new LinkedList<>();
-        queue.offer(new int[]{startX, startY});
+    static int solve(int x, int y) {
+        
+        // 올라가다가 좌우로 갈 수 있는 길이 있으면 가야함 따라서 한칸씩 움직이면서 좌우로 이동 가능한지 확인
+        while (x > 0) {
 
-        while (!queue.isEmpty()) {
-            int[] current = queue.poll();
-            int x = current[0];
-            int y = current[1];
-
-            // 맨 위에 도달하면 현재 y 값 반환
-            if (x == 0) return y;
+            x--;
 
             // 왼쪽으로 가능한 만큼 이동
             if (y > 0 && map[x][y - 1] == 1) {
                 while (y > 0 && map[x][y - 1] == 1) {
-                    y--;
+                    y--;  // 왼쪽으로 이동
                 }
             }
-            // 오른쪽으로 가능한 만큼 이동
+            // 오른쪽으로 가능한 만큼 이동(왼쪽이 불가능하다면)
             else if (y < 99 && map[x][y + 1] == 1) {
                 while (y < 99 && map[x][y + 1] == 1) {
-                    y++;
+                    y++;  // 오른쪽으로 이동
                 }
             }
-
-            // 위쪽으로 이동하여 다음 탐색 위치로 추가
-            if (x > 0 && map[x - 1][y] == 1) {
-                queue.offer(new int[]{x - 1, y});
-            }
         }
-        return -1; // 실패 시 -1 반환
+
+        return y; // 최종적으로 도달한 y 값 반환
     }
 }
