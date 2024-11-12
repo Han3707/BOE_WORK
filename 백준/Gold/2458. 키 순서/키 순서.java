@@ -58,6 +58,7 @@ public class Main {
     // DFS 탐색
     static int dfsCount(int current, List<Integer>[] list) {
         int count = 0;
+        if(list.length == 0) return count;
         for (int next : list[current]) {
             if (!visited[next]) {
                 visited[next] = true;
