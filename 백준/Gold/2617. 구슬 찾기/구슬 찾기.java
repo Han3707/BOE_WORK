@@ -1,69 +1,63 @@
 import java.io.*;
 import java.util.*;
 
-//TIP To <b>Run</b> code, press <shortcut actionId="Run"/> or
-// click the <icon src="AllIcons.Actions.Execute"/> icon in the gutter.
+
 public class Main {
-    static int N,M;
+    static int n,m;
     static List<Integer>[] small;
     static List<Integer>[] big;
-    static boolean[] check;
+    static boolean[] visit;
 
     public static void main(String[] args) throws IOException{
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
 
-        N = Integer.parseInt(st.nextToken());
-        M = Integer.parseInt(st.nextToken());
+        n = Integer.parseInt(st.nextToken());
+        m = Integer.parseInt(st.nextToken());
 
-        small = new List[N+1];
-        big = new List[N+1];
+        small = new List[n+1];
+        big = new List[n+1];
 
-
-        for(int i=1; i<N+1; i++){
+        for(int i=1; i<n+1; i++){
             small[i] = new ArrayList<>();
             big[i] = new ArrayList<>();
         }
 
-        for(int i=0; i<M; i++){
+
+        for(int i=0; i<m; i++){
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            small[b].add(a); // b보다 작은 것은 a 다
-            big[a].add(b); // a 보다 큰 것은 b 다
+            small[b].add(a); // 자기보다 작은 애들 저장
+            big[a].add(b); // 자기보다 큰 애들 저장
         }
 
-
-        int cnt = (N+1)/2;
+        int ch = (n+1)/2;
         int ans = 0;
-
-        for(int i=1; i<N+1; i++){
+        for(int i=1; i<n+1; i++){
             int s = dfs(i,small);
             int b = dfs(i,big);
-//            System.out.println(s+" "+b);
 
-            if(s >= cnt || b >= cnt) ans++;
+            if(s >= ch || b >= ch) ans++;
+
         }
 
-
         System.out.println(ans);
-
-
 
     }
 
     static int dfs(int start,List<Integer>[] list){
-        check = new boolean[N+1];
-        check[start] = true;
-        return dfscount(start,list);
+        visit = new boolean[n+1];
+        visit[start] = true;
+        return dfscnt(start,list);
     }
 
-    static int dfscount(int cur,List<Integer>[] list){
-        int cnt = 0;
-        for (int next: list[cur]){
-            if(!check[next]){
-                check[next] = true;
-                cnt += 1 + dfscount(next,list);
+    static int dfscnt(int idx,List<Integer>[] list){
+        int cnt = 0; // 자기보다 작거나 큰 수 개수 체크하는 변수
+        for(int next:list[idx]){
+            if(!visit[next]){
+                visit[next] = true;
+                cnt+= 1+dfscnt(next,list);
             }
         }
         return cnt;
