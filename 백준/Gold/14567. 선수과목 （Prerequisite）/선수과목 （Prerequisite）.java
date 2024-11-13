@@ -1,71 +1,64 @@
-import com.sun.source.tree.NewArrayTree;
-
 import java.io.*;
 import java.util.*;
 
-// 출력 1번 과목부터 n 번 과목까지 차례대로 몇 번째 학기에 이수가능한지 번호 출력
-// 입력 List<Integer>[] list 필요
-// 위상정렬에서 부모(?)가 몇개 조건이 이수되어야하는지 체크하는 parent 배열 필요
-// 결과값 저장하는 res[] 배열
-
 public class Main {
+    static int[] in,num; // 위상정렬 선수 카운트
+    static List<Integer>[] adj;
     static int n,m;
-    static List<Integer>[] list;
-    static int[] ans,parent;
-
     public static void main(String[] args) throws IOException{
+
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         StringTokenizer st = new StringTokenizer(br.readLine());
+
+
 
         n = Integer.parseInt(st.nextToken());
         m = Integer.parseInt(st.nextToken());
 
-        list = new List[n+1];
-        parent = new int[n+1];
-        ans = new int[n+1];
-
+        adj = new List[n+1];
+        in = new int[n+1];
+        num = new int[n+1]; // 결과값 저장 ***
         for(int i=1; i<n+1; i++){
-            list[i] = new ArrayList<>();
+            adj[i] = new ArrayList<>();
         }
 
-
-        for(int i=0; i<m; i++){
+        for(int i=1; i<m+1; i++){
             st = new StringTokenizer(br.readLine());
             int a = Integer.parseInt(st.nextToken());
             int b = Integer.parseInt(st.nextToken());
-            list[a].add(b);
-            parent[b]++;
+            adj[a].add(b);
+            in[b]++;
         }
 
         bfs();
-
-        for(int i=1; i<n+1; i++){
-            System.out.print(ans[i]+" ");
+        for(int i=1; i<n+1; i++) {
+            System.out.print(num[i]+" ");
         }
         System.out.println();
     }
-
+    // bfs 돌리는 부분 다시 한번 보기
     static void bfs(){
-        Queue<Integer> q= new LinkedList<>();
+        Queue<Integer> q = new LinkedList<>();
 
         for(int i=1; i<n+1; i++){
-            if(parent[i] == 0){
+            if(in[i] == 0){
                 q.offer(i);
-                ans[i] = 1;
+                num[i] = 1; // 처음이니깐 1
             }
         }
-
+        
         while (!q.isEmpty()){
             int cur = q.poll();
-
-            for(int next:list[cur]){
-                parent[next]--;
-                if(parent[next] == 0){
-                    q.offer(next);
-                    ans[next] = ans[cur]+1;
+            // cur 현재 위치 poll 했으니깐 현재 위치에서 다음 위치로 갈 거 adj를 통해 확인하기
+            for(int next:adj[cur]){
+                in[next]--; // 확인 후 in -- 함으로써 다시 in[?] 0 인 경우 찾아서 결과값 저장
+                if(in[next] == 0){
+                    q.offer(next); // q 추가 
+                    num[next] = num[cur] +1; // 현재 num 에서 +1
                 }
             }
-
         }
+
+
     }
 }
