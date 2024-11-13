@@ -2,96 +2,95 @@ import java.io.*;
 import java.util.*;
 
 public class Main {
-    static int N;
-    static int[] population;
+    static int n;
     static List<Integer>[] adj;
-    static boolean[] selected;
+    static int[] numP;
     static int minDiff = Integer.MAX_VALUE;
-    static boolean isPossible = false; // 두 그룹을 만들 수 있는지 여부를 저장
+    static boolean[] select;
+    static boolean isPossible = false; // 연결이 되어 있는지
+    public static void main(String[] args) throws IOException{
 
-    public static void main(String[] args) throws IOException {
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        StringTokenizer st;
 
-        N = Integer.parseInt(br.readLine()); // 구역의 수
-        population = new int[N + 1];
-        adj = new ArrayList[N + 1];
-        selected = new boolean[N + 1];
-
-        StringTokenizer st = new StringTokenizer(br.readLine());
-        for (int i = 1; i <= N; i++) {
-            population[i] = Integer.parseInt(st.nextToken()); // 각 구역의 인구 수
+        n = Integer.parseInt(br.readLine());
+        numP = new int[n+1];
+        adj = new List[n+1];
+        select = new boolean[n+1];
+        st = new StringTokenizer(br.readLine());
+        for(int i=1; i<n+1; i++){
+            numP[i] = Integer.parseInt(st.nextToken());
             adj[i] = new ArrayList<>();
         }
 
-        // 각 구역의 인접 구역 정보 읽기
-        for (int i = 1; i <= N; i++) {
+        for(int i=1; i<n+1; i++){
             st = new StringTokenizer(br.readLine());
-            int count = Integer.parseInt(st.nextToken());
-            for (int j = 0; j < count; j++) {
+            int cnt = Integer.parseInt(st.nextToken());
+            for(int j=0; j<cnt; j++){
                 adj[i].add(Integer.parseInt(st.nextToken()));
             }
         }
 
-        findMinDiff(1); // 조합 탐색 시작
-        
-        // 두 그룹을 만들 수 있다면 최소 인구수 차이 출력, 그렇지 않으면 -1 출력
-        System.out.println(isPossible ? minDiff : -1);
+        simul(1);
+
+        if(isPossible) System.out.println(minDiff);
+        else System.out.println(-1);
     }
 
-    // 구역을 선택하여 최소 인구수 차이를 찾는 메서드
-    static void findMinDiff(int index) {
-        if (index == N + 1) {
-            calculateDifference();
+    static void simul(int idx){
+        if(idx == n+1){
+            calc();
             return;
         }
-        selected[index] = true;
-        findMinDiff(index + 1);
-        selected[index] = false;
-        findMinDiff(index + 1);
+
+        select[idx] = true;
+        simul(idx+1);
+        select[idx] = false;
+        simul(idx+1);
     }
 
-    // 선택된 구역들의 인구수 차이 계산
-    static void calculateDifference() {
-        List<Integer> groupA = new ArrayList<>();
-        List<Integer> groupB = new ArrayList<>();
-        int populationA = 0, populationB = 0;
+    static void calc(){
+        List<Integer> group1 = new ArrayList<>();
+        List<Integer> group2 = new ArrayList<>();
+        int sum1 = 0;
+        int sum2 = 0;
 
-        for (int i = 1; i <= N; i++) {
-            if (selected[i]) {
-                groupA.add(i);
-                populationA += population[i];
-            } else {
-                groupB.add(i);
-                populationB += population[i];
+        for(int i=1; i<n+1; i++){
+            if(select[i]){
+                group1.add(i);
+                sum1 += numP[i];
+            }else{
+                group2.add(i);
+                sum2 += numP[i];
             }
         }
 
-        // 두 그룹이 모두 비어있지 않고, 각각 연결되어 있는 경우만 인구수 차이를 계산
-        if (!groupA.isEmpty() && !groupB.isEmpty() && isConnected(groupA) && isConnected(groupB)) {
-            isPossible = true; // 두 그룹을 만들 수 있음을 표시
-            minDiff = Math.min(minDiff, Math.abs(populationA - populationB));
+        if(!group1.isEmpty() && !group2.isEmpty() && isConnected(group1) && isConnected(group2)){
+            isPossible = true;
+            minDiff = Math.min(minDiff,Math.abs(sum1-sum2));
         }
     }
 
-    // 연결성 검사 메서드 (BFS 사용)
-    static boolean isConnected(List<Integer> group) {
-        boolean[] visited = new boolean[N + 1];
-        Queue<Integer> queue = new LinkedList<>();
-        queue.add(group.get(0));
-        visited[group.get(0)] = true;
-        int count = 1;
+    static boolean isConnected(List<Integer> list){
+        Queue<Integer> q = new LinkedList<>();
+        boolean[] visit = new boolean[n+1];
+        int cur = list.get(0);
+        visit[cur] = true;
+        q.offer(cur);
+        int cnt = 1;
 
-        while (!queue.isEmpty()) {
-            int node = queue.poll();
-            for (int neighbor : adj[node]) {
-                if (group.contains(neighbor) && !visited[neighbor]) {
-                    visited[neighbor] = true;
-                    queue.add(neighbor);
-                    count++;
+        while(!q.isEmpty()){
+            int start = q.poll();
+
+            for(int next:adj[start]){
+
+                if(list.contains(next) && !visit[next]){
+                    visit[next] = true;
+                    cnt++;
+                    q.offer(next);
                 }
             }
         }
-
-        return count == group.size();
+        return list.size() == cnt;
     }
 }
