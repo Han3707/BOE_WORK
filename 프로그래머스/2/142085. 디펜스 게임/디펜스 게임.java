@@ -25,19 +25,21 @@ class Solution {
         if(r == 0) return true;
         if(r > enemy.length) return false;
         
-        Integer[] e = new Integer[r];
+        List<Integer> elist = new ArrayList<>();
         for(int i=0; i<r; i++){
-            e[i] = enemy[i];
+            elist.add(enemy[i]);
         }
         
-        Arrays.sort(e,Collections.reverseOrder());
+        // 크기 역순 정렬
+        Collections.sort(elist);
+        Collections.reverse(elist);
         
         long needpeople = 0;
         int idx = Math.min(k,r); 
         
         //k 로 피해지는 만큼 회피하고 남은 적들 내 병사로 처치하기
         for(int i=idx; i<r; i++){
-            needpeople += e[i];
+            needpeople += elist.get(i);
         }
         
         return needpeople <= n;
