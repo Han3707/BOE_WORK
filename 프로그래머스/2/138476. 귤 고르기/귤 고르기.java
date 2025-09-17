@@ -2,24 +2,28 @@ import java.util.*;
 
 class Solution {
     public int solution(int k, int[] tangerine) {
+        int answer = 0;
         
-        HashMap<Integer,Integer> map = new HashMap<>();
+        HashMap<Integer,Integer> m = new HashMap<>();
         
-        for(int x:tangerine){
-            map.put(x,map.getOrDefault(x,0)+1);
+        for(int t:tangerine){
+            m.put(t,m.getOrDefault(t,0)+1);
         }
         
-        List<Integer> list = new ArrayList<>(map.values());
-        list.sort(Comparator.reverseOrder());
+        List<Integer> list = new ArrayList<>(m.values());
+        
+        list.sort((a,b)-> b - a);
         
         int cnt = 0;
-        int ans = 0;
-        for(int l:list){
-            cnt += l;
-            ans++;
-            if(cnt >= k) break;
+        int num = 0;
+        
+        for(int x:list){
+            num += x;
+            cnt++;
+            
+            if(num >= k) break;
         }
         
-        return ans;
+        return cnt;
     }
 }
