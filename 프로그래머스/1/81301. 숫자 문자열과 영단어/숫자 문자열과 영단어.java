@@ -1,6 +1,8 @@
 class Solution {
     public int solution(String s) {
         
+        int answer = 0;
+        
         s = s.replaceAll("zero","0");
         s = s.replaceAll("one","1");
         s = s.replaceAll("two","2");
@@ -12,9 +14,7 @@ class Solution {
         s = s.replaceAll("eight","8");
         s = s.replaceAll("nine","9");
         
-        int answer = Integer.parseInt(s);
-        
-    
+        answer = Integer.parseInt(s);
         
         return answer;
     }
